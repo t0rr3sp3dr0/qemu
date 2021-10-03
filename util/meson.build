@@ -85,3 +85,5 @@ if have_block
                                         if_false: files('filemonitor-stub.c'))
   util_ss.add(when: 'CONFIG_LINUX', if_true: files('vfio-helpers.c'))
 endif
+
+util_ss.add(when: 'CONFIG_POSIX', if_true: files('spc.c'))

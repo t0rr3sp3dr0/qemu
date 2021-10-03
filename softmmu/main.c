@@ -26,6 +26,10 @@
 #include "qemu-common.h"
 #include "sysemu/sysemu.h"
 
+#ifdef CONFIG_POSIX
+#include "util/spc.h"
+#endif
+
 #ifdef CONFIG_SDL
 #if defined(__APPLE__) || defined(main)
 #include <SDL.h>
@@ -46,6 +50,10 @@ int main(int argc, char **argv)
 
 int main(int argc, char **argv, char **envp)
 {
+#ifdef CONFIG_POSIX
+    spc_drop_privileges(0);
+#endif
+
     qemu_init(argc, argv, envp);
     qemu_main_loop();
     qemu_cleanup();

@@ -12,6 +12,7 @@
 #include "qemu/error-report.h"
 #include "qapi/qapi-types-net.h"
 #include "net/net.h"
+#include "util/spc.h"
 /* macOS vmnet framework header */
 #include <vmnet/vmnet.h>
 
@@ -228,7 +229,7 @@ static xpc_object_t _construct_vmnet_interface_description(
     return interface_desc;
 }
 
-int net_init_vmnet_macos(const Netdev *netdev, const char *name,
+int __net_init_vmnet_macos(const Netdev *netdev, const char *name,
                         NetClientState *peer, Error **errp)
 {
     assert(netdev->type == NET_CLIENT_DRIVER_VMNET_MACOS);
@@ -444,4 +445,14 @@ int net_init_vmnet_macos(const Netdev *netdev, const char *name,
     }
 
     return 0;
+}
+
+int net_init_vmnet_macos(const Netdev *netdev, const char *name,
+                         NetClientState *peer, Error **errp)
+{
+    int ret;
+    spc_restore_privileges();
+    ret = __net_init_vmnet_macos(netdev, name, peer, errp);
+    spc_drop_privileges(0);
+    return ret;
 }
